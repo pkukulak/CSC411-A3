@@ -1,4 +1,7 @@
 import scipy.io as io
+import sklearn as sk
+import numpy as np
+from sklearn.cross_validation import train_test_split
 
 LABELED = "/Users/FILIP/U of T/CSC411/A3/data/labeled_images.mat"
 UNLABELED = "/Users/FILIP/U of T/CSC411/A3/data/unlabeled_images.mat"
@@ -37,19 +40,31 @@ def load_data():
     # M is the number of features. That is, data is arranged
     # by row and features are arranged by column.
     x, y, z = loaded_labeled['tr_images'].shape
-    num_data = z
-    num_features = x * y
-    labeled_data = loaded_labeled['tr_images'].reshape(num_data, num_features)
-    
-    # We use 80% of our data set as training data.
-    # The remaining 20% is used as validation data.
-    num_train = num_data * 8/10
-    train_input = labeled_data[:num_train]
-    train_targ = loaded_labeled['tr_labels'][:num_train]
+    N, M = z, x * y
+    labels = loaded_labeled['tr_labels']
+    identities = loaded_labeled['tr_identity']
+    labeled_data = loaded_labeled['tr_images'].reshape(N, M)
 
-    valid_input = labeled_data[num_train:]
-    valid_targ = loaded_labeled['tr_labels'][num_train:]
+    data_to_targ = np.append(labeled_data, labels, axis=1)
+    data_to_targ_to_id = np.append(data_to_targ, identities, axis=1)
+
+    data_to_targ_to_id = np.array(sorted(data_to_targ_to_id,
+                                         key=lambda entry: entry[M+1]))
+
+    known_data = data_to_targ_to_id[data_to_targ_to_id[:, M+1] != -1]
+    unknown_data = data_to_targ_to_id[data_to_targ_to_id[:, M+1] == -1]
+    known_data_to_targ = known_data[:, :M+1]
+    known_labeled_data = known_data[:, :M]
+    unknown_data_to_targ = unknown_data[:, :M+1]
+    unknown_labeled_data = unknown_data[:, :M]
+
+
+    train_in = labeled_data[:num_train]
+    train_targ = data_to_targ[:num_train, M]
+
+    valid_in = labeled_data[num_train:]
+    valid_targ = data_to_targ[num_train:, M]
 
     test_input = loaded_test['public_test_images']
 
-    return train_input, train_targ, valid_input, valid_targ, test_input
+    return train_in, train_targ, valid_in, valid_targ, test_input
