@@ -19,11 +19,6 @@ def load_data():
         test_path - the path (relative or absolute) to test data.
                     this data MUST be stored in a .mat file.
     output:
-        train_input - an array of data representing the training set
-        train_targ - an array of labels corresponding to the training set
-        valid_input - an array of data representing the validation set
-        valid_targ - an array of labels corresponding to the validation set
-        test_input - an array of data representing the test set
     '''
     # First, load the raw data into dictionaries.
     # These dictionaries all contain keys that allow us to index
@@ -35,36 +30,16 @@ def load_data():
     loaded_unlabeled = io.loadmat(UNLABELED)
     loaded_test = io.loadmat(TEST)
 
-    # We then reshape the data into a two-dimensional array
-    # of shape (N, M), where N is the number of examples and
-    # M is the number of features. That is, data is arranged
-    # by row and features are arranged by column.
-    x, y, z = loaded_labeled['tr_images'].shape
+    train_in = loaded_labeled['tr_images']
+    train_targ = loaded_labeled['tr_labels']
+    train_ids = loaded_labeled['tr_identity']
+
+    x, y, z = train_in.shape
     N, M = z, x * y
-    labels = loaded_labeled['tr_labels']
-    identities = loaded_labeled['tr_identity']
-    labeled_data = loaded_labeled['tr_images'].reshape(N, M)
-
-    data_to_targ = np.append(labeled_data, labels, axis=1)
-    data_to_targ_to_id = np.append(data_to_targ, identities, axis=1)
-
-    data_to_targ_to_id = np.array(sorted(data_to_targ_to_id,
-                                         key=lambda entry: entry[M+1]))
-
-    known_data = data_to_targ_to_id[data_to_targ_to_id[:, M+1] != -1]
-    unknown_data = data_to_targ_to_id[data_to_targ_to_id[:, M+1] == -1]
-    known_data_to_targ = known_data[:, :M+1]
-    known_labeled_data = known_data[:, :M]
-    unknown_data_to_targ = unknown_data[:, :M+1]
-    unknown_labeled_data = unknown_data[:, :M]
-
-
-    train_in = labeled_data[:num_train]
-    train_targ = data_to_targ[:num_train, M]
-
-    valid_in = labeled_data[num_train:]
-    valid_targ = data_to_targ[num_train:, M]
-
-    test_input = loaded_test['public_test_images']
-
-    return train_in, train_targ, valid_in, valid_targ, test_input
+    train_in = train_in.reshape(N, M)
+    
+    unlabeled_in = loaded_unlabeled['unlabeled_images']
+    
+    test_in = loaded_test['public_test_images']
+    
+    return train_in, train_targ, train_ids, unlabeled_in, test_in

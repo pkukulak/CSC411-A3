@@ -1,43 +1,28 @@
-from run_knn import run_knn
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import cross_validation
+from itertools import groupby
 from util import load_data
-import matplotlib.pyplot as plt
 import numpy as np
 
-N = 50
-
-def classification_rate(prediction, validation):
-    '''
-    Calculate the classification rate of the array prediction,
-    given the targets in validation.
-
-    inputs:
-        prediction:     the vector of outputs from knn
-                        classification
-        validation:     the target vector of our validation set
-
-    outputs:
-        a number 0 <= k <= 1 representing the percentage of 
-        successfully labeled inputs
-    '''
-    correct = 0
-    for i in range (N):
-        if prediction[i, 0] == validation[i, 0]:
-            correct += 1.0
-    return correct / N
-
 if __name__ == "__main__":
-    k_vals = np.array([7, 14, 21])
+    k_vals = [3, 5, 7, 11, 14, 21]
     rates = []
-
-    train_in, train_targ, valid_in, valid_targ, test_in = load_data()
+    data_in, data_targ, data_ids, unlabeled_in, test_in = load_data()
+    
+    N, M = data_in.shape
 
     for k in k_vals:
-        knn_prediction = run_knn(k, train_in, train_targ, valid_in)
-        rates += [classification_rate(knn_prediction, valid_targ)]
-        print "k = {} , success rate = {}".format(k, rates[-1])
-
-    plt.plot(k_vals, rates, 'ro')
-    plt.axis([min(k_vals) - 1, max(k_vals) + 1, 0, 1])
-    plt.xlabel('k')
-    plt.ylabel('classification rate')
-    plt.show()
+        kNN = KNeighborsClassifier(n_neighbors=k)
+        full_data = np.append(np.append(data_in, data_targ, axis=1), data_ids, axis=1)
+        sorted_by_id = full_data[full_data[:, M+1].argsort()]
+        '''
+        groups = np.array([])
+        unknows = None
+        for k, v in groupby(sorted_by_id, lambda x: x[M+1]):
+            if k == -1:
+                unknown = v
+            else:
+                groups = np.append(groups, L)
+            print k, v
+            print groups
+        '''
