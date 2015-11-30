@@ -18,6 +18,11 @@ def load_data():
         test_path - the path (relative or absolute) to test data.
                     this data MUST be stored in a .mat file.
     output:
+        train_in - an NxM matrix of all training data.
+        train_targ - an Nx1 matrix of labels corresponding to training data.
+        train_ids - an Nx1 matrix of ids corresponding to training data.
+        unlabeled_in - a KxM matrix of additional unlabeled training data.
+        test_in - a JxM matrix of test data.
     '''
     # First, load the raw data into dictionaries.
     # These dictionaries all contain keys that allow us to index
