@@ -10,16 +10,11 @@ if __name__ == "__main__":
     
     N, M = data_in.shape
     full_data = np.append(np.append(data_in, data_targ, axis=1), data_ids, axis=1)
-    pruned_full_data = prune_individuals(full_data)
-     
-    Np, Mp = pruned_full_data.shape
 
-    pruned_in = pruned_full_data[:, :M]
-    pruned_targ = pruned_full_data[:, M].reshape(Np, 1)
-    pruned_ids = pruned_full_data[:, M+1].reshape(Np, 1)
+    pruned_in, pruned_targ, pruned_ids = prune_individuals(full_data)
 
     for k in k_vals:
         kNN = KNeighborsClassifier(n_neighbors=k)
         train_in, valid_in, train_targ, valid_targ = train_test_split(pruned_in, pruned_targ, test_size=0.33, stratify=pruned_ids)
         kNN.fit(train_in, train_targ.flatten())
-        print "k = {} ; prediction = {}".format(k, kNN.score(valid_in, valid_targ))
+        print "k = {} ; classification rate = {}".format(k, kNN.score(valid_in, valid_targ))

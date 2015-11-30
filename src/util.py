@@ -27,9 +27,6 @@ def load_data():
     # First, load the raw data into dictionaries.
     # These dictionaries all contain keys that allow us to index
     # into the data and metadata.
-    #loaded_labeled = io.loadmat(labeled_path)
-    #loaded_unlabeled = io.loadmat(unlabeled_path)
-    #loaded_test = io.loadmat(test_path)
     loaded_labeled = io.loadmat(LABELED)
     loaded_unlabeled = io.loadmat(UNLABELED)
     loaded_test = io.loadmat(TEST)
@@ -57,10 +54,9 @@ def prune_individuals(full_data):
                     of M features. the M+1th column is the label
                     for that datapoint and the M+2th column is the id.
     output:
-        pruned_data - an NxM+2 matrix, where the only difference from
-                      the input is that any identifiers that appear
-                      once in the M+2th column are replaced with a common
-                      value, 42069.
+        pruned_in - an NxM matrix of data points.
+        pruned_targ - an Nx1 matrix of labels corresponding to pruned_in.
+        pruned_ids - an Nx1 matrix of ids corresponding to pruned_in
     '''
     N, M = full_data.shape
     all_ids = full_data[:, M-1]
@@ -70,4 +66,10 @@ def prune_individuals(full_data):
             new_ids = np.append(new_ids, 42069)
         else:
             new_ids = np.append(new_ids, all_ids[i])
-    return np.append(full_data[:, :M-1], new_ids.reshape(-1, 1), axis=1)
+    pruned_full_data = np.append(full_data[:, :M-1], new_ids.reshape(-1, 1), axis=1)
+
+    pruned_in = pruned_full_data[:, :M-2]
+    pruned_targ = pruned_full_data[:, M-2]
+    pruned_ids = pruned_full_data[:, M-1]
+
+    return pruned_in, pruned_targ, pruned_ids
