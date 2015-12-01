@@ -1,6 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cross_validation import train_test_split
-from itertools import groupby
 from util import load_data, prune_individuals
 import numpy as np
 
@@ -15,6 +14,7 @@ if __name__ == "__main__":
 
     for k in k_vals:
         kNN = KNeighborsClassifier(n_neighbors=k)
-        train_in, valid_in, train_targ, valid_targ = train_test_split(pruned_in, pruned_targ, test_size=0.33, stratify=pruned_ids)
+        train_in, valid_in, train_targ, valid_targ = train_test_split(pruned_in, 
+                pruned_targ, test_size=0.33, stratify=pruned_ids)
         kNN.fit(train_in, train_targ.flatten())
         print "k = {} ; classification rate = {}".format(k, kNN.score(valid_in, valid_targ))
