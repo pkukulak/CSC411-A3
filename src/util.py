@@ -3,9 +3,13 @@ import sklearn as sk
 import numpy as np
 from sklearn.cross_validation import train_test_split
 
-LABELED = "/Users/FILIP/U of T/CSC411/A3/data/labeled_images.mat"
-UNLABELED = "/Users/FILIP/U of T/CSC411/A3/data/unlabeled_images.mat"
-TEST = "/Users/FILIP/U of T/CSC411/A3/data/public_test_images.mat"
+LABELED = "../data/labeled_images.mat"
+UNLABELED = "../data/unlabeled_images.mat"
+TEST = "../data/public_test_images.mat"
+
+# This global variable represents the number of classes
+# in this classification task.
+K = 7
 
 def load_data():
     '''
@@ -73,3 +77,25 @@ def prune_individuals(full_data):
     pruned_ids = pruned_full_data[:, M-1]
 
     return pruned_in, pruned_targ, pruned_ids
+
+def encode_prediction(model, data_in):
+    '''
+    Return a NxK matrix, where N is the number of examples and K
+    is the number of classes. This matrix represents the predictions
+    yielded by the input model in a 1-of-K format: that is, each row
+    has a 1 in the kth position, representing the prediction for the
+    corresponding row in data_in.
+    input:
+        model - a model that has been fit to training data.
+                must be a scikit-learn model, i.e. have a "prediciton"
+                method.
+        data_in - an NxM matrix, where each row is a data point of M features.
+    output:
+        encoded - an NxK matrix, where each row has a 1 in the kth position.
+                  this indications that example i is of class k.
+    '''
+    N, M = data_in.shape
+    prediction = model.predict(data_in)
+    encoded = np.zeros((N, K+1))
+    encoded[np.arange(N), prediction.astype(int)] = 1
+    return encoded
