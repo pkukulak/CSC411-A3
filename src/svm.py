@@ -1,5 +1,5 @@
 from sklearn import svm
-from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import train_test_split, cross_val_score
 from util import *
 import numpy as np
 
@@ -18,8 +18,8 @@ def run_nu_SVC(train_in, valid_in, train_targ, valid_targ):
     H_kernel = 'poly'
     H_degree = 2
     H_coef0 = 0.0
-    H_nu = 0.2
-        
+    H_nu = 0.19
+
     classifier = svm.NuSVC(nu=H_nu, kernel=H_kernel, coef0=H_coef0, degree=H_degree)
     classifier.fit(train_in, train_targ)
     return classifier.score(valid_in, valid_targ)
