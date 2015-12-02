@@ -1,6 +1,6 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.cross_validation import train_test_split
-from util import load_data, prune_individuals
+from util import *
 import numpy as np
 
 def run_AdaBoost(train_in, valid_in, train_targ, valid_targ):

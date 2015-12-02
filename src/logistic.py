@@ -1,6 +1,6 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.cross_validation import train_test_split
-from util import load_data, prune_individuals
+from util import *
 import numpy as np
 
 if __name__ == "__main__":

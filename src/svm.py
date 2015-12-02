@@ -1,15 +1,16 @@
 from sklearn import svm
 from sklearn.cross_validation import train_test_split
-from util import load_data, prune_individuals
+from util import *
 import numpy as np
 
 def run_SVC(train_in, valid_in, train_targ, valid_targ):
-    H_c = 4.0
+    H_c = 3e2
     H_kernel = 'poly'
     H_degree = 2
-    
-    num_iters = 10
-    classifier = svm.SVC(kernel=H_kernel, C=H_c, degree=H_degree)
+    H_coef0 = 0.0
+    H_g = 0.001
+
+    classifier = svm.SVC(kernel=H_kernel, C=H_c, coef0=H_coef0, degree=H_degree, gamma=H_g)
     classifier.fit(train_in, train_targ)
     return classifier.score(valid_in, valid_targ)
 
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     rates = np.array([])
     for i in xrange(num_iters):
         train_in, valid_in, train_targ, valid_targ = train_test_split(pruned_in,
-            pruned_targ, test_size=0.33, stratify=pruned_ids)
+            pruned_targ, test_size=0.27, stratify=pruned_ids)
 
         rates = np.append(rates, run_SVC(train_in, valid_in, train_targ, valid_targ))
         print "Success rate = {}".format(rates[i])
