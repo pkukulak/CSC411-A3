@@ -41,7 +41,6 @@ if __name__ == "__main__":
     rates_nusvc = np.array([])
     nusvc_models = np.array([])
     predictions = np.empty([418, 0])
-    print predictions.shape
 
     while i < num_experts:
         print "Training."
