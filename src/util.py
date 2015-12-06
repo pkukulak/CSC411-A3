@@ -35,19 +35,28 @@ def load_data():
     loaded_unlabeled = io.loadmat(UNLABELED)
     loaded_test = io.loadmat(TEST)
 
-    train_in = loaded_labeled['tr_images']
+    train_in = reshape_data(loaded_labeled['tr_images'])
     train_targ = loaded_labeled['tr_labels']
     train_ids = loaded_labeled['tr_identity']
 
-    x, y, z = train_in.shape
-    N, M = z, x * y
-    train_in = train_in.flatten().reshape(M, N).T
-    
-    unlabeled_in = loaded_unlabeled['unlabeled_images']
-    
-    test_in = loaded_test['public_test_images']
-    
+    test_in = reshape_data(loaded_test['public_test_images'])
+
+    unlabeled_in = reshape_data(loaded_unlabeled['unlabeled_images'])
+   
     return train_in, train_targ, train_ids, unlabeled_in, test_in
+
+def reshape_data(data_in):
+    '''
+    Return a z by x*y matrix of data points, where x & y are
+    the dimensions of each ith datapoint, and z is the number of examples.
+    input:
+        data_in - an x by y by z matrix of datapoints.
+    output:
+        reshaped_data_in - a z by x*y matrix of datapoints.
+    '''
+    x, y, z = data_in.shape
+    N, M = z, x *y
+    return data_in.flatten().reshape(M, N).T
 
 def prune_individuals(full_data):
     '''
