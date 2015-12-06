@@ -6,6 +6,7 @@ from sklearn.cross_validation import train_test_split
 LABELED = "../data/labeled_images.mat"
 UNLABELED = "../data/unlabeled_images.mat"
 TEST = "../data/public_test_images.mat"
+CSV_FILE_NAME = "submission.csv"
 
 # This global variable represents the number of classes
 # in this classification task.
@@ -102,6 +103,23 @@ def prune_individuals(full_data):
     pruned_ids = pruned_full_data[:, M-1]
 
     return pruned_in, pruned_targ, pruned_ids
+
+def write_prediction_to_csv(test_targ):
+    '''
+    Write a file to disk that formats the prediction stored in
+    test_targ.
+    input:
+        test_targ - a Nx1 array of predictions for test data.
+    '''
+    N, _ = test_targ.shape
+    with open(CSV_FILE_NAME, "w+") as f:
+        f.write("Id,Prediction\n")
+        for i in xrange(N):
+            if i > N - 1:
+                f.write("{},0\n".format(i+1))
+            else:
+                f.write("{},{}\n".format(i+1, int(test_targ.flatten()[i]))
+        f.close()
 
 def encode_prediction(model, data_in):
     '''
