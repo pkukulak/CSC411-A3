@@ -58,6 +58,22 @@ def reshape_data(data_in):
     N, M = z, x *y
     return data_in.flatten().reshape(M, N).T
 
+def concatenate_data_info(data_in, data_targ, data_ids):
+    '''
+    Concatenate two rows to data_in: the targets for each row,
+    stored in data_targ; the ids for each row, stored in data_ids.
+    Return the resulting matrix.
+    input:
+        data_in - an NxM matrix of data points per row.
+        data_targ - an Nx1 matrix of data point targets.
+        data_ids - an Nx1 matrix of data point identities.
+    output:
+        full_data - an NxM+2 matrix of data and its corresponding
+                    target and identity.
+    '''
+    data_in_targ = np.append(data_in, data_targ, axis=1)
+    return np.append(data_in_targ, data_ids, axis=1)
+
 def prune_individuals(full_data):
     '''
     Replace all unique identifiers with a single identifier value.
