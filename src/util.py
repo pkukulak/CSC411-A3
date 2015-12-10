@@ -5,7 +5,8 @@ from sklearn.cross_validation import train_test_split
 
 LABELED = "../data/labeled_images.mat"
 UNLABELED = "../data/unlabeled_images.mat"
-TEST = "../data/public_test_images.mat"
+PUBLIC_TEST = "../data/public_test_images.mat"
+HIDDEN_TEST = "../data/hidden_test_images.mat"
 CSV_FILE_NAME = "submission.csv"
 
 # This global variable represents the number of classes
@@ -34,13 +35,17 @@ def load_data():
     # into the data and metadata.
     loaded_labeled = io.loadmat(LABELED)
     loaded_unlabeled = io.loadmat(UNLABELED)
-    loaded_test = io.loadmat(TEST)
+    loaded_pub_test = io.loadmat(PUBLIC_TEST)
+    loaded_hid_test = io.loadmat(HIDDEN_TEST)
 
     train_in = reshape_data(loaded_labeled['tr_images'])
     train_targ = loaded_labeled['tr_labels']
     train_ids = loaded_labeled['tr_identity']
 
-    test_in = reshape_data(loaded_test['public_test_images'])
+    pub_test_in = reshape_data(loaded_pub_test['public_test_images'])
+    hid_test_in = reshape_data(loaded_hid_test['hidden_test_images'])
+
+    test_in = np.vstack((pub_test_in, hid_test_in))
 
     unlabeled_in = reshape_data(loaded_unlabeled['unlabeled_images'])
    
@@ -118,7 +123,7 @@ def write_prediction_to_csv(test_targ):
             if i > N - 1:
                 f.write("{},0\n".format(i+1))
             else:
-                f.write("{},{}\n".format(i+1, int(test_targ.flatten()[i]))
+                f.write("{},{}\n".format(i+1, int(test_targ.flatten()[i])))
         f.close()
 
 def encode_prediction(model, data_in):

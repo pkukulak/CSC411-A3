@@ -29,11 +29,12 @@ def run_nu_SVC(train_in, valid_in, train_targ, valid_targ):
     return classifier.score(valid_in, valid_targ), classifier
 
 if __name__ == "__main__":
+    print "Loading data."
     data_in, data_targ, data_ids, unlabeled_in, test_in = load_data()
     N, M = data_in.shape
     
-    print "Loading data."
     gabor_data = pickle.load(open("gabor.p","rb"))
+    gabor_test = pickle.load(open("gabor_test.p", "rb"))
     full_data = np.append(np.append(gabor_data, data_targ, axis=1), data_ids, axis=1)
     pruned_in, pruned_targ, pruned_ids = prune_individuals(full_data)
     num_experts = 10
@@ -42,8 +43,9 @@ if __name__ == "__main__":
     svc_models = np.array([])
     rates_nusvc = np.array([])
     nusvc_models = np.array([])
-    predictions = np.empty([418, 0])
+    predictions = np.empty([NUM_TEST, 0])
 
+    print "Finding {} experts.".format(num_experts)
     while i < num_experts:
         print "Training."
         train_in, valid_in, train_targ, valid_targ = train_test_split(pruned_in,
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         curr_nu_svc_rate, nu_svc = run_nu_SVC(train_in, valid_in, train_targ, valid_targ)
 
         print "Score = {}".format(curr_nu_svc_rate)
-        if curr_nu_svc_rate > 0.77:
+        if curr_nu_svc_rate > 0.80:
             rates_nusvc = np.append(rates_nusvc, curr_nu_svc_rate)
             nusvc_models = np.append(nusvc_models, nu_svc)
             #nu_svc_predictions = np.append(nu_svc_predictions, nu_svc_prediction)
@@ -61,16 +63,13 @@ if __name__ == "__main__":
             print "Found a NuSVC Expert."
     
     for expert in nusvc_models:
-        test_targ = expert.predict(test_in)
-        predictions = np.append(predictions, test_targ.reshape(418, 1), axis=1)
+        test_targ = expert.predict(gabor_test)
+        predictions = np.append(predictions, test_targ.reshape(NUM_TEST, 1), axis=1)
 
     final_test_targ, _ = mode(predictions, axis=1)
 
     with open("submission.csv", "w+") as f:
         f.write("Id,Prediction\n")
         for i in xrange(NUM_TEST):
-            if i > test_targ.size - 1:
-                f.write("{},0\n".format(i+1))
-            else:
                 f.write("{},{}\n".format(i+1, int(final_test_targ.flatten()[i])))
         f.close()

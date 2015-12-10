@@ -45,23 +45,15 @@ def gabor_features(data_in):
 	for i in range(data_in.shape[0]):
 		gabor_features.append(compute_feats(data_in[i].reshape(32,32), kernels))
 	
-
 	return np.vstack(gabor_features)
 
-
-
 if __name__ == "__main__":
-	
-	data_in, data_targ, data_ids, unlabeled_in, test_in = load_data()
-	gabor_feats = gabor_features(data_in)
-	pickle.dump(gabor_feats, open("gabor.p", "wb"))
-
-	
-	
-
-
-	
-
-
-
-
+    data_in, data_targ, data_ids, unlabeled_in, test_in = load_data()
+    print "Applying Gabor filters to input data."
+    gabor_feats = gabor_features(data_in)
+    print "Apply Gabor filters to test data."
+    gabor_test = gabor_features(test_in)
+    print "Dumping input data."
+    pickle.dump(gabor_feats, open("gabor.p", "wb"))
+    print "Dumping test data."
+    pickle.dump(gabor_test, open("gabor_test.p", "wb"))
