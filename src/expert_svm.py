@@ -3,6 +3,7 @@ from sklearn.cross_validation import train_test_split, cross_val_score
 from util import *
 from scipy.stats.mstats import mode
 import numpy as np
+import cPickle as pickle
 
 NUM_TEST = 1253
 
@@ -32,7 +33,8 @@ if __name__ == "__main__":
     N, M = data_in.shape
     
     print "Loading data."
-    full_data = np.append(np.append(data_in, data_targ, axis=1), data_ids, axis=1)
+    gabor_data = pickle.load(open("gabor.p","rb"))
+    full_data = np.append(np.append(gabor_data, data_targ, axis=1), data_ids, axis=1)
     pruned_in, pruned_targ, pruned_ids = prune_individuals(full_data)
     num_experts = 10
     i = 0

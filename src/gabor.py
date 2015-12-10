@@ -32,10 +32,10 @@ def compute_feats(image, kernels):
 def gabor_features(data_in):
 	#create gabor kernels
 	kernels = []
-	for theta in range(4):
-		theta = theta / 4.0 * np.pi
-		for sigma in (1, 3):
-			for frequency in (0.05, 0.25):
+	for theta in range(8):
+		theta = theta / 8.0 * np.pi
+		for sigma in (1, 3, 5):
+			for frequency in (.10, 0.25, 1.0):
 				kernel = np.real(gabor_kernel(frequency, theta=theta, sigma_x=sigma, sigma_y=sigma))
 				kernels.append(kernel)
 
